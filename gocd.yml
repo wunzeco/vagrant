@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: gocd
   sudo: yes
   
   vars:
@@ -8,7 +8,7 @@
     go_agent_url: http://download.go.cd/gocd-deb/{{ go_agent_pkg }}
     go_server_pkg: go-server-{{ go_version }}.deb
     go_server_url: http://download.go.cd/gocd-deb/{{ go_server_pkg }}
-    go_prereqs: [ openjdk-7-jdk, unzip ]
+    go_prereqs: [ openjdk-7-jdk, unzip, git ]
 
   tasks:
   - name: Update apt cache
