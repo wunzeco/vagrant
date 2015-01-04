@@ -17,6 +17,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     n1.vm.network "private_network", ip: "172.20.10.10"
   end
 
+  config.vm.define "docker" do |docker|
+    docker.vm.hostname = "docker"
+    docker.vm.network "private_network", ip: "172.20.10.20"
+    docker.vm.provision "ansible" do |ansible|
+        ansible.playbook = "docker.yml"
+    end
+  end
+
   config.vm.define "gocd" do |gocd|
     gocd.vm.hostname = "gocd"
     gocd.vm.network "private_network", ip: "172.20.10.50"
