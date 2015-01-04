@@ -1,3 +1,48 @@
 ---
-- hosts:
+- hosts: docker
+  sudo: yes
+
+  vars:
+    docker_prereqs: [ curl ]
+
+
+  tasks:
+    - name: Verify device-mapper is installed
+      stat: path=/sys/class/misc/device-mapper
+      register: dm
+
+    - fail: msg="Whoops! Device Mapper not installed"
+      when: not dm.stat.islnk or not dm.stat.exists
+
+    - name: Add docker apt repo
+      apt_repository: repo='deb https://get.docker.io/ubuntu docker main' state=present
+    
+    - name: Add docker repo gpg key
+      apt_key: url=https://get.docker.io/gpg state=present
+
+    - name: Update apt cache
+      apt: update-cache=yes
+
+    - name: Install prereqs
+      apt: name={{ item }} state=present
+      with_items: docker_prereqs
+
+    - name: Install docker 
+      apt: name=lxc-docker state=present
+
+    - name: Verify docker is installed
+      command: docker info
+      register: info
+
+    - debug: msg="{{ info.stdout_lines }}"
+
+    - name: Update UFW forwarding policy
+      lineinfile: dest=/etc/default/ufw regexp='^DEFAULT_FORWARD_POLICY=' line='DEFAULT_FORWARD_POLICY="ACCEPT"'
+      notify: Reload UFW firewall
+    
+
+  handlers:
+    - name: Reload UFW firewall
+      command: ufw reload
+
 
