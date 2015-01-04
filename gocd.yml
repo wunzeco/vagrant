@@ -1,0 +1,28 @@
+---
+- hosts: all
+  sudo: yes
+  
+  vars:
+    go_version: 14.4.0-1356
+    go_agent_pkg: go-agent-{{ go_version }}.deb
+    go_agent_url: http://download.go.cd/gocd-deb/{{ go_agent_pkg }}
+    go_server_pkg: go-server-{{ go_version }}.deb
+    go_server_url: http://download.go.cd/gocd-deb/{{ go_server_pkg }}
+    go_prereqs: [ openjdk-7-jdk, unzip ]
+
+  tasks:
+  - name: Update apt cache
+    apt: update_cache=yes
+
+  - name: Install prereq software
+    apt: name={{ item }} state=present
+    with_items: go_prereqs
+
+  - name: Download go-server
+    get_url: url={{ go_server_url }} dest=/tmp/{{ go_server_pkg }} mode=0644
+
+  - name: Download go-agent
+    get_url: url={{ go_agent_url }} dest=/tmp/{{ go_agent_pkg }} mode=0644
+
+  - name: Install go-server
+    apt: deb=/tmp/{{ go_server_pkg }}
