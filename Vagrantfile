@@ -23,6 +23,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     docker.vm.provision "ansible" do |ansible|
         ansible.playbook = "docker.yml"
     end
+    docker.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+    end
   end
 
   config.vm.define "gocd" do |gocd|
