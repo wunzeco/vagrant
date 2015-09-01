@@ -39,4 +39,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible.playbook = "gocd.yml"
     end
   end
+  config.vm.define "jenkins" do |jenkins|
+    jenkins.vm.hostname = "jenkins"
+    jenkins.vm.network "private_network", ip: "172.20.10.55"
+    config.vm.network "forwarded_port", guest: 8080, host: 8080
+    config.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+    end
+    config.vm.provision "ansible" do |ansible|
+        ansible.playbook = "jenkins.yml"
+    end
+  end
 end

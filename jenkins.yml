@@ -1,0 +1,25 @@
+---
+- hosts: jenkins
+  sudo: yes
+
+  vars:
+    jenkins_apt_key_url: 'https://jenkins-ci.org/debian/jenkins-ci.org.key'
+    jenkins_apt_repo: 'deb http://pkg.jenkins-ci.org/debian binary/'
+    jenkins_prereqs: [ openjdk-7-jdk, unzip, git-core, curl ]
+
+  tasks:
+  - name: Add Jenkins apt key
+    apt_key: url={{ jenkins_apt_key_url }} state=present
+
+  - name: Add Jenkins apt repo
+    apt_repository: repo='{{ jenkins_apt_repo }}' state=present
+
+  - name: Update apt cache
+    apt: update_cache=yes
+
+  - name: Install prereq software
+    apt: name={{ item }} state=present
+    with_items: jenkins_prereqs
+
+  - name: Install Jenkins
+    apt: name=jenkins state=present
